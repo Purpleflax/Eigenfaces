@@ -12,7 +12,6 @@ def load_images():
     images = []
     num_subjects = len(os.listdir('att_faces'))
     for i in range(1, num_subjects):
-        print(f"Loading subject {i}...")
         for j in range(1, 11):
             image_path = f'att_faces/s{i}/{j}.pgm'
             image = Image.open(image_path)
@@ -67,7 +66,7 @@ def recognize_face(input_face, eigenfaces, mean_face, training_weights):
 def pre_process_image(path):
     image = Image.open(path)
     image = image.convert('L')
-    image = image.resize((92, 112), Image.ANTIALIAS)
+    image = image.resize((92, 112))
     image = np.array(image, dtype=np.float64).flatten()
     return image
 
@@ -152,6 +151,7 @@ class CreateToolTip(object):
         self.widget.bind("<ButtonPress>", self.leave)
         self.id = None
         self.tw = None
+        self.color = 'black'
 
     def enter(self, event=None):
         self.schedule()
@@ -181,7 +181,7 @@ class CreateToolTip(object):
         self.tw.wm_geometry("+%d+%d" % (x, y))
         label = Label(self.tw, text=self.text, justify='left',
                       background="#ffffff", relief='solid', borderwidth=1,
-                      wraplength = self.wraplength)
+                      wraplength = self.wraplength, foreground=self.color)
         label.pack(ipadx=1)
 
     def hidetip(self):
@@ -202,25 +202,25 @@ if __name__ == '__main__':
     training_weights = [np.dot(images[i, :] - mean_face, eigenfaces) for i in range(images.shape[0])]
 
     style = ttk.Style()
-    style.configure('TButton', font=('Helvetica', 12, 'bold'), borderwidth='4', foreground='black')
+    style.configure('TButton', font=('Helvetica', 12, 'bold'), borderwidth='4', foreground='black' , background='#f0f0f0')
     style.configure('TLabel', font=('Helvetica', 10), background='#f0f0f0')
-    style.map('TButton', foreground=[('active', '!disabled', 'green')], background=[('active', 'black')])
+    style.map('TButton', foreground=[('active', '!disabled', 'green')], background=[('active', '#f0f0f0')])
 
-    header = tk.Label(root, text="Eigenface Recognizer", font=("Helvetica", 18, "bold"), bg='#f0f0f0')
+    header = tk.Label(root, text="Eigenface Recognizer", font=("Helvetica", 18, "bold"), bg='#f0f0f0', fg="blue")
     header.pack(pady=10)
 
     description = "This application uses Eigenfaces for face recognition. You can add new subjects or test the recognition with an existing dataset."
-    description_label = tk.Label(root, text=description, wraplength=500, justify="center", bg='#f0f0f0')
+    description_label = tk.Label(root, text=description, wraplength=500, justify="center", bg='#f0f0f0', font=("Helvetica", 12), fg="gray")
     description_label.pack(pady=10)
 
     frame = tk.Frame(root, bg='#f0f0f0')
     frame.pack(pady=20)
 
-    upload_button = tk.Button(frame, text="Upload an Image", command=upload_action)
+    upload_button = tk.Button(frame, text="Upload an Image", command=upload_action, background='#f0f0f0', font=('Helvetica', 12, 'bold'), bd=0)
     upload_button.grid(row=0, column=0, padx=20)
     CreateToolTip(upload_button, "Upload an image to recognize the subject.")
 
-    add_subject_button = tk.Button(frame, text="Add New Subject", command=add_subject_action)
+    add_subject_button = tk.Button(frame, text="Add New Subject", command=add_subject_action, background='#f0f0f0', font=('Helvetica', 12, 'bold'), bd=0)
     add_subject_button.grid(row=0, column=1, padx=20)
     CreateToolTip(add_subject_button, "Add a new subject to the dataset.\n\nEach subject must have 10 images.\n\n" +
                                        "Images must be in JPG format.\n\nImages must focus on the subject's face from the front.\n\n" +
